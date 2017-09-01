@@ -6,12 +6,12 @@ import (
     "syscall"
     "unsafe"
     "bytes"
-    "bufio"
     "fmt"
     "math/rand"
     "time"
     "flag"
     "strings"
+    "./keyio"
 )
 
 // Text styling
@@ -95,51 +95,6 @@ func main() {
     rows := int(termsize.Rows)
     columns := int(termsize.Columns)
 
-    /* Set up terminal to accept input without pressing enter */
-    term := &syscall.Termios{ }
-    origterm := &syscall.Termios{ }
-
-    syscall.Syscall(
-        syscall.SYS_IOCTL,
-        uintptr(syscall.Stdin),
-        uintptr(syscall.TIOCGETA),
-        uintptr(unsafe.Pointer(term)))
-
-    *origterm = *term
-
-    term.Lflag &^= (syscall.ICANON | syscall.ECHO)
-    term.Cc[syscall.VMIN] = 1
-    term.Cc[syscall.VTIME] = 0
-
-    syscall.Syscall(
-        syscall.SYS_IOCTL,
-        uintptr(syscall.Stdin),
-        uintptr(syscall.TIOCSETA),
-        uintptr(unsafe.Pointer(term)))
-
-    // Hide cursor
-    fmt.Printf("\x1B[?25l")
-
-    // Callback to restore terminal to original settings
-    restoreTo := func(origterm *syscall.Termios) {
-      // Show cursor
-      fmt.Printf("\x1B[?25h")
-      syscall.Syscall(
-          syscall.SYS_IOCTL,
-          uintptr(syscall.Stdin),
-          uintptr(syscall.TIOCSETA),
-          uintptr(unsafe.Pointer(origterm)))
-    }
-
-    /* Signal handling */
-    signals := make(chan os.Signal, 1)
-    signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
-    go func(origterm *syscall.Termios) {
-        <-signals
-        restoreTo(origterm)
-        os.Exit(0)
-    }(origterm)
-
     /* Game setup */
     // Instantiate multidimensional slice for game objects
     objects := make([][]string, rows)
@@ -172,12 +127,22 @@ func main() {
 
     render(objects)
 
-    reader := bufio.NewReader(os.Stdin)
+    /* Set up reader */
+    reader := keyio.NewReader()
+
+    // Close reader on ctrl-c
+    signals := make(chan os.Signal, 1)
+    signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+    go func(r keyio.Reader) {
+        <-signals
+        r.Close()
+        os.Exit(0)
+    }(reader)
 
     /* Game loop */
     for {
         // Get input
-        input := []byte{ 0, 0, 0, 0 }
+        input := []byte{0, 0, 0, 0}
         reader.Read(input)
 
         // Process input
@@ -223,7 +188,7 @@ func main() {
                 break
             }
 
-            // Set back to original values if play againn
+            // Set back to original values if play again
             char = startchar
             x = initialX
             y = initialY
@@ -238,5 +203,5 @@ func main() {
     }
 
     // Restore to original terminal
-    restoreTo(origterm)
+    reader.Close()
 }
