@@ -11,7 +11,7 @@ import (
     "time"
     "flag"
     "strings"
-    "./keyio"
+    "charmine/keyio"
 )
 
 // Text styling
