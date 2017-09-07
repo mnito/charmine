@@ -11,7 +11,8 @@ import (
     "time"
     "flag"
     "strings"
-    "charmine/keyio"
+
+    "github.com/mnito/charmine/keyio"
 )
 
 // Text styling
