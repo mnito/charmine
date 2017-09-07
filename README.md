@@ -2,6 +2,10 @@
 
 Charmine as it currently stands is an experimental, proof-of-concept command line game. The game concept itself needs to be further developed, the level generator should be less random, and some sort of points system would be nice. This version of Charmine was developed as a sandbox to test the basic concept and also showcase the techniques for creating terminal-based games for Linux and OS X.
 
+## Gameplay
+
+The goal is to move a character that cycles through A to F to the other side (the right side) of the field. The character can only pass through characters of the same letter and empty spaces.
+
 ## Installation
 
 The `go get` command can be used to install Charmine:
@@ -50,11 +54,11 @@ A seed can be set for the random number generator providing a determinate field 
 charmine -seed 123456789
 ```
 
-### License
+## License
 
 Charmine is licensed under the MIT License.
 
-### Author
+## Author
 
 Michael P. Nitowski
 
