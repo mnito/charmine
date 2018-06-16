@@ -1,6 +1,6 @@
 # Charmine
 
-Charmine as it currently stands is an experimental, proof-of-concept command line game. The game concept itself needs to be further developed, the level generator should be less random, and some sort of points system would be nice. This version of Charmine was developed as a sandbox to test the basic concept and also showcase the techniques for creating terminal-based games for Linux and OS X.
+Charmine as it currently stands is an experimental, proof-of-concept command line game. The game concept itself needs to be further developed, the level generator should be less random, and some sort of points system would be nice. This version of Charmine was developed as a sandbox to test the basic concept and also showcase the techniques for creating terminal-based games for Linux and macOS.
 
 ## Gameplay
 
